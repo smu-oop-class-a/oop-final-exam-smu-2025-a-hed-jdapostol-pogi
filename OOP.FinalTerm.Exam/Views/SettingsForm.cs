@@ -45,17 +45,13 @@ namespace OOP.FinalTerm.Exam
 
         private void LoadDirectorsToGrid()
         {
-            try
-            {
-                //TODO: Students will implement this method to load directors into dgvDirectors using _directorRepository.GetAllDirectors()
-                //refer to LoadMoviesToGrid() method for guidance
-                //hide director id
-               //dgvDirectors.DataSource = 
+            var directors = _directorRepository.GetAllDirectors();
+            dgvDirectors.DataSource = directors;
 
-            }
-            catch (Exception ex)
+            // Hide the ID column (optional but recommended)
+            if (dgvDirectors.Columns.Contains("Id"))
             {
-                MessageBox.Show($"Error loading directors: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dgvDirectors.Columns["Id"].Visible = false;
             }
         }
 
@@ -220,5 +216,17 @@ namespace OOP.FinalTerm.Exam
             }
         }
         #endregion
+
+        private void dgvMovies_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var directors = _directorRepository.GetAllDirectors();
+            dgvDirectors.DataSource = directors;
+
+           
+            if (dgvDirectors.Columns.Contains("Id"))
+            {
+                dgvDirectors.Columns["Id"].Visible = false;
+            }
+        }
     }
 }
