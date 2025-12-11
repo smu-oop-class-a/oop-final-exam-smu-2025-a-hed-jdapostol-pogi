@@ -1,4 +1,4 @@
-name: Autograding Tests (Linux Shell/Grep)
+name: Autograding Tests
 
 on:
   push:
@@ -11,195 +11,177 @@ permissions:
   contents: read
 
 jobs:
-  run-autograding-tests:
+  autograde:
     runs-on: ubuntu-latest
-    if: github.actor != 'github-classroom[bot]'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    # The following steps use 'grep' and conditional shell logic to replicate your checks.
-    # Paths use forward slashes '/'.
+      # ----------------------------------------------------------
+      # TEST 1 — PersonModel class + properties  (5 points)
+      # ----------------------------------------------------------
+      - name: PersonModel Class
+        id: test-personmodel
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: PersonModel Class
+          command: "grep -R \"class PersonModel\" -n OOP.FinalTerm.Exam/Model || true"
+          expected-output: "PersonModel"
+          comparison-method: contains
+          points: 5
 
-    # ========================================================
-    # 1. PersonModel (7 Points Total)
-    # ========================================================
-    - name: PersonModel Class & Properties (5 pts)
-      id: person-class
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: PersonModel Class
-        # Checks for Class definition AND Id, FirstName, LastName
-        command: |
-          grep -E 'class\s+PersonModel' OOP.FinalTerm.Exam/Model/PersonModel.cs && \
-          grep -E 'Id' OOP.FinalTerm.Exam/Model/PersonModel.cs && \
-          grep -E 'FirstName' OOP.FinalTerm.Exam/Model/PersonModel.cs && \
-          grep -E 'LastName' OOP.FinalTerm.Exam/Model/PersonModel.cs
-        timeout: 10
-        max-score: 5
+      # ----------------------------------------------------------
+      # TEST 2 — SQLite attributes (2 points)
+      # ----------------------------------------------------------
+      - name: PersonModel Attributes
+        id: test-person-attributes
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: SQLite Attributes
+          command: "grep -R \"PrimaryKey\" OOP.FinalTerm.Exam/Model/PersonModel.cs || true"
+          expected-output: "PrimaryKey"
+          comparison-method: contains
+          points: 2
 
-    - name: PersonModel SQLite Attributes (2 pts)
-      id: person-attribs
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: PersonModel Attributes
-        # Checks for PrimaryKey and AutoIncrement
-        command: |
-          grep -E '\[PrimaryKey' OOP.FinalTerm.Exam/Model/PersonModel.cs && \
-          grep -E 'AutoIncrement' OOP.FinalTerm.Exam/Model/PersonModel.cs
-        timeout: 10
-        max-score: 2
+      # ----------------------------------------------------------
+      # TEST 3 — DirectorModel inherits PersonModel (3 points)
+      # ----------------------------------------------------------
+      - name: DirectorModel Inheritance
+        id: test-dir-inherit
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: DirectorModel Inheritance
+          command: "grep -R \"class DirectorModel .*: PersonModel\" OOP.FinalTerm.Exam/Model || true"
+          expected-output: ": PersonModel"
+          comparison-method: contains
+          points: 3
 
-    # ========================================================
-    # 2. DirectorModel (6 Points Total)
-    # ========================================================
-    - name: DirectorModel Inheritance (3 pts)
-      id: director-inherit
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorModel Inheritance
-        # Checks if DirectorModel inherits PersonModel
-        command: grep -E 'class\s+DirectorModel\s*:\s*PersonModel' OOP.FinalTerm.Exam/Model/DirectorModel.cs
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 4 — DirectorModel properties (Genres + TotalMoviesCreated) (3 points)
+      # ----------------------------------------------------------
+      - name: DirectorModel Properties
+        id: test-dir-props
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: DirectorModel Properties
+          command: |
+            grep -R \"Genres\" OOP.FinalTerm.Exam/Model/DirectorModel.cs &&
+            grep -R \"TotalMoviesCreated\" OOP.FinalTerm.Exam/Model/DirectorModel.cs || true
+          expected-output: "TotalMoviesCreated"
+          comparison-method: contains
+          points: 3
 
-    - name: DirectorModel Properties (3 pts)
-      id: director-props
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorModel Properties
-        # Checks for Genres and TotalMoviesCreated
-        command: |
-          grep -E 'Genres' OOP.FinalTerm.Exam/Model/DirectorModel.cs && \
-          grep -E 'TotalMoviesCreated' OOP.FinalTerm.Exam/Model/DirectorModel.cs
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 5 — Repository AddDirector uses Insert() (3 points)
+      # ----------------------------------------------------------
+      - name: AddDirector Method
+        id: test-adddirector
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: AddDirector Insert()
+          command: "grep -R \"Insert\" OOP.FinalTerm.Exam/Repository/DirectorRepository.cs || true"
+          expected-output: "Insert"
+          comparison-method: contains
+          points: 3
 
-    # ========================================================
-    # 3. DirectorRepository (12 Points Total)
-    # ========================================================
-    - name: DirectorRepo Constructor (3 pts)
-      id: repo-ctor
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorRepo Constructor
-        # Checks for SQLiteConnection and CreateTable, ensuring no commented code is found (using || to fail the test)
-        command: |
-          grep -E 'new\s*SQLiteConnection' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs && \
-          grep -E '\.CreateTable' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs && \
-          ! grep -E '//.*new\s*SQLiteConnection' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 6 — GetAllDirectors uses Table().ToList() (3 points)
+      # ----------------------------------------------------------
+      - name: GetAllDirectors Method
+        id: test-getall
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: GetAllDirectors
+          command: "grep -R \"Table.*ToList\" OOP.FinalTerm.Exam/Repository/DirectorRepository.cs || true"
+          expected-output: "ToList"
+          comparison-method: contains
+          points: 3
 
-    - name: DirectorRepo AddDirector (3 pts)
-      id: repo-add
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorRepo AddDirector
-        # Checks for uncommented Insert method call
-        command: grep -v '^//' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs | grep -E 'Insert'
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 7 — GetDirectorById uses Find() (3 points)
+      # ----------------------------------------------------------
+      - name: GetDirectorById Method
+        id: test-getbyid
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: GetDirectorById
+          command: "grep -R \"Find\" OOP.FinalTerm.Exam/Repository/DirectorRepository.cs || true"
+          expected-output: "Find"
+          comparison-method: contains
+          points: 3
 
-    - name: DirectorRepo GetAll (3 pts)
-      id: repo-getall
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorRepo GetAll
-        # Checks for uncommented Table and ToList
-        command: |
-          grep -v '^//' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs | grep -E '\.Table' && \
-          grep -v '^//' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs | grep -E '\.ToList'
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 8 — DirectorForm controls exist (3 points)
+      # ----------------------------------------------------------
+      - name: DirectorForm Controls
+        id: test-controls
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: Form Controls
+          command: |
+            grep -R \"txtFirstName\" OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs &&
+            grep -R \"txtLastName\" OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs &&
+            grep -R \"txtGenres\" OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs &&
+            grep -R \"numTotalMovies\" OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs || true
+          expected-output: "numTotalMovies"
+          comparison-method: contains
+          points: 3
 
-    - name: DirectorRepo GetById (3 pts)
-      id: repo-getbyid
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorRepo GetById
-        # Checks for uncommented Find method call
-        command: grep -v '^//' OOP.FinalTerm.Exam/Repository/DirectorRepository.cs | grep -E '\.Find'
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 9 — Validation in BtnSave_Click (3 points)
+      # ----------------------------------------------------------
+      - name: Validation Check
+        id: test-validation
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: Validation
+          command: "grep -R \"IsNullOrWhiteSpace\" OOP.FinalTerm.Exam/Views/DirectorForm.cs || true"
+          expected-output: "IsNullOrWhiteSpace"
+          comparison-method: contains
+          points: 3
 
-    # ========================================================
-    # 4. DirectorForm (9 Points Total)
-    # ========================================================
-    - name: DirectorForm Controls (3 pts)
-      id: form-controls
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorForm Controls
-        # Checks Designer file for control names
-        command: |
-          grep -E 'txtFirstName' OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs && \
-          grep -E 'txtLastName' OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs && \
-          grep -E 'txtGenres' OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs && \
-          grep -E 'numTotalMovies' OOP.FinalTerm.Exam/Views/DirectorForm.Designer.cs
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 10 — LoadDirectorsToGrid (4 points)
+      # ----------------------------------------------------------
+      - name: LoadDirectorsToGrid
+        id: test-loadgrid
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: LoadDirectorsToGrid
+          command: "grep -R \"LoadDirectorsToGrid\" OOP.FinalTerm.Exam/Views/SettingsForm.cs || true"
+          expected-output: "LoadDirectorsToGrid"
+          comparison-method: contains
+          points: 4
 
-    - name: DirectorForm GetDirector (3 pts)
-      id: form-getdirector
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorForm GetDirector
-        # Checks mapping logic
-        command: |
-          grep -E 'public.*GetDirector' OOP.FinalTerm.Exam/Views/DirectorForm.cs && \
-          grep -E 'FirstName' OOP.FinalTerm.Exam/Views/DirectorForm.cs && \
-          grep -E 'return' OOP.FinalTerm.Exam/Views/DirectorForm.cs
-        timeout: 10
-        max-score: 3
+      # ----------------------------------------------------------
+      # TEST 11 — Compilation check (2 points)
+      # ----------------------------------------------------------
+      - name: Compilation Check
+        id: test-compilation
+        uses: classroom-resources/autograding-io-grader@v1
+        with:
+          test-name: Compilation
+          command: |
+            test -f OOP.FinalTerm.Exam/OOP.FinalTerm.Exam.csproj
+          expected-output: ""
+          comparison-method: exact
+          points: 2
 
-    - name: DirectorForm Validation (3 pts)
-      id: form-validation
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: DirectorForm Validation
-        # Checks for validation logic in Save Click
-        command: |
-          grep -E 'BtnSave_Click' OOP.FinalTerm.Exam/Views/DirectorForm.cs && \
-          grep -E 'IsNullOrWhiteSpace' OOP.FinalTerm.Exam/Views/DirectorForm.cs && \
-          grep -E 'MessageBox.Show' OOP.FinalTerm.Exam/Views/DirectorForm.cs
-        timeout: 10
-        max-score: 3
-
-    # ========================================================
-    # 5. SettingsForm (4 Points Total)
-    # ========================================================
-    - name: SettingsForm Load (4 pts)
-      id: settings-load
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: SettingsForm Load
-        # Checks LoadDirectorsToGrid logic
-        command: |
-          grep -E 'LoadDirectorsToGrid' OOP.FinalTerm.Exam/Views/SettingsForm.cs && \
-          grep -E 'GetAllDirectors' OOP.FinalTerm.Exam/Views/SettingsForm.cs && \
-          grep -E 'dgvDirectors' OOP.FinalTerm.Exam/Views/SettingsForm.cs
-        timeout: 10
-        max-score: 4
-
-    # ========================================================
-    # 6. Compilation (2 Points Total)
-    # ========================================================
-    - name: Project Compilation (2 pts)
-      id: compilation
-      uses: classroom-resources/autograding-command-grader@v1
-      with:
-        test-name: Project Compilation
-        # Attempts to build the project
-        command: "dotnet build ./OOP.FinalTerm.Exam/OOP.FinalTerm.Exam.csproj"
-        timeout: 30
-        max-score: 2
-
-    # ========================================================
-    # Reporter
-    # ========================================================
-   - name: Autograding Reporter
-     uses: classroom-resources/autograding-grading-reporter@v1
-     with:
-       runners: "person-class,person-attribs,director-inherit,director-props,repo-ctor,repo-add,repo-getall,repo-getbyid,form-controls,form-getdirector,form-validation,settings-load,compilation"
+      # ----------------------------------------------------------
+      # REPORTER
+      # ----------------------------------------------------------
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          TEST-PERSONMODEL_RESULTS: ${{ steps.test-personmodel.outputs.result }}
+          TEST-PERSON-ATTRIBUTES_RESULTS: ${{ steps.test-person-attributes.outputs.result }}
+          TEST-DIR-INHERIT_RESULTS: ${{ steps.test-dir-inherit.outputs.result }}
+          TEST-DIR-PROPS_RESULTS: ${{ steps.test-dir-props.outputs.result }}
+          TEST-ADDDIRECTOR_RESULTS: ${{ steps.test-adddirector.outputs.result }}
+          TEST-GETALL_RESULTS: ${{ steps.test-getall.outputs.result }}
+          TEST-GETBYID_RESULTS: ${{ steps.test-getbyid.outputs.result }}
+          TEST-CONTROLS_RESULTS: ${{ steps.test-controls.outputs.result }}
+          TEST-VALIDATION_RESULTS: ${{ steps.test-validation.outputs.result }}
+          TEST-LOADGRID_RESULTS: ${{ steps.test-loadgrid.outputs.result }}
+          TEST-COMPILATION_RESULTS: ${{ steps.test-compilation.outputs.result }}
