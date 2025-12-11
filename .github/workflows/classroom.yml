@@ -19,8 +19,9 @@ jobs:
         uses: actions/checkout@v4
 
       # ----------------------------------------------------------
-      # TEST 1 — PersonModel class + properties  (5 points)
+      # TESTS
       # ----------------------------------------------------------
+
       - name: PersonModel Class
         id: test-personmodel
         uses: classroom-resources/autograding-io-grader@v1
@@ -31,9 +32,6 @@ jobs:
           comparison-method: contains
           points: 5
 
-      # ----------------------------------------------------------
-      # TEST 2 — SQLite attributes (2 points)
-      # ----------------------------------------------------------
       - name: PersonModel Attributes
         id: test-person-attributes
         uses: classroom-resources/autograding-io-grader@v1
@@ -44,9 +42,6 @@ jobs:
           comparison-method: contains
           points: 2
 
-      # ----------------------------------------------------------
-      # TEST 3 — DirectorModel inherits PersonModel (3 points)
-      # ----------------------------------------------------------
       - name: DirectorModel Inheritance
         id: test-dir-inherit
         uses: classroom-resources/autograding-io-grader@v1
@@ -57,9 +52,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 4 — DirectorModel properties (Genres + TotalMoviesCreated) (3 points)
-      # ----------------------------------------------------------
       - name: DirectorModel Properties
         id: test-dir-props
         uses: classroom-resources/autograding-io-grader@v1
@@ -72,9 +64,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 5 — Repository AddDirector uses Insert() (3 points)
-      # ----------------------------------------------------------
       - name: AddDirector Method
         id: test-adddirector
         uses: classroom-resources/autograding-io-grader@v1
@@ -85,9 +74,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 6 — GetAllDirectors uses Table().ToList() (3 points)
-      # ----------------------------------------------------------
       - name: GetAllDirectors Method
         id: test-getall
         uses: classroom-resources/autograding-io-grader@v1
@@ -98,9 +84,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 7 — GetDirectorById uses Find() (3 points)
-      # ----------------------------------------------------------
       - name: GetDirectorById Method
         id: test-getbyid
         uses: classroom-resources/autograding-io-grader@v1
@@ -111,9 +94,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 8 — DirectorForm controls exist (3 points)
-      # ----------------------------------------------------------
       - name: DirectorForm Controls
         id: test-controls
         uses: classroom-resources/autograding-io-grader@v1
@@ -128,9 +108,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 9 — Validation in BtnSave_Click (3 points)
-      # ----------------------------------------------------------
       - name: Validation Check
         id: test-validation
         uses: classroom-resources/autograding-io-grader@v1
@@ -141,9 +118,6 @@ jobs:
           comparison-method: contains
           points: 3
 
-      # ----------------------------------------------------------
-      # TEST 10 — LoadDirectorsToGrid (4 points)
-      # ----------------------------------------------------------
       - name: LoadDirectorsToGrid
         id: test-loadgrid
         uses: classroom-resources/autograding-io-grader@v1
@@ -154,9 +128,6 @@ jobs:
           comparison-method: contains
           points: 4
 
-      # ----------------------------------------------------------
-      # TEST 11 — Compilation check (2 points)
-      # ----------------------------------------------------------
       - name: Compilation Check
         id: test-compilation
         uses: classroom-resources/autograding-io-grader@v1
@@ -169,10 +140,11 @@ jobs:
           points: 2
 
       # ----------------------------------------------------------
-      # REPORTER
+      # REPORTER (FIXED — no indentation error, no bad formatting)
       # ----------------------------------------------------------
       - name: Autograding Reporter
         uses: classroom-resources/autograding-grading-reporter@v1
+
         env:
           personmodel-results: ${{ steps.test-personmodel.outputs.result }}
           person-attributes-results: ${{ steps.test-person-attributes.outputs.result }}
@@ -185,5 +157,7 @@ jobs:
           validation-results: ${{ steps.test-validation.outputs.result }}
           loadgrid-results: ${{ steps.test-loadgrid.outputs.result }}
           compilation-results: ${{ steps.test-compilation.outputs.result }}
-       with:
-          runners: test-personmodel,test-person-attributes,test-dir-inherit,test-dir-props,test-adddirector,test-getall,test-getbyid,test-controls,test-validation,test-loadgrid,test-compilation
+
+        with:
+          runners: >
+            test-personmodel,
